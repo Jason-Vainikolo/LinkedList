@@ -1,0 +1,282 @@
+package Part3;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Scanner;
+import java.util.Set;
+
+/**
+ *
+ * @author Jason
+ * @StudentID 16961397
+ */
+public class LinkedRRSet<E extends Comparable<E>> extends LinkedSet<E> {
+
+    private ArrayList removeList;
+    private ArrayList retainList;
+
+    public LinkedRRSet() {
+        super();
+    }
+
+    public LinkedRRSet(Collection<? extends E> c) {
+        super(c);
+    }
+
+    @Override
+    public boolean add(E target) {
+        Node<E> newNode = new Node<E>(target);
+        if (firstNode == null || target.compareTo(firstNode.element) < 0) {
+            //Checks the first position of the removeList
+            //if element already exist
+            if (firstNode != null && target.equals(firstNode.element)) {
+                System.out.println(firstNode.element + " already exist");
+                return false;
+            }
+
+            //Creates a newNode
+            newNode.next = firstNode;
+            firstNode = newNode;
+            numElements++;
+            return true;
+        } else {
+            Node<E> currentNode = firstNode;
+
+            //To check if the element in the first position is null then returns false
+            if (firstNode != null && target.equals(firstNode.element)) {
+                System.out.println(firstNode.element + " already exist");
+                return false;
+            }
+            while (currentNode.next != null && target.compareTo(currentNode.next.element) >= 0) {
+                //Checking the middle of the removeList to see
+                //if it already exist
+                if (currentNode != null && target.equals(currentNode.next.element)) {
+                    System.out.println(currentNode.next.element + " already exist");
+                    return false;
+                }
+                currentNode = currentNode.next;
+            }
+
+            newNode.next = currentNode.next;
+            currentNode.next = newNode;
+            numElements++;
+            return true;
+        }
+    }
+
+    @Override
+    public boolean remove(E target1, E target2, Set set) {
+        removeList = new ArrayList();
+        retainList = new ArrayList();
+
+        if (set.contains(target1) && set.contains(target2)) {
+            if (target2.compareTo(target1) >= 0) {
+                Node<E> currentNode = firstNode;
+
+                //Check condition for firstnode
+                if (currentNode == null || target1.compareTo(currentNode.element) < 0) {
+                    System.out.println("set: []");
+                    return false;
+                } else {
+                    //Finds the elements added to a removeList and removed from the set
+                    while (currentNode.next != null && target2.compareTo(currentNode.next.element) >= 0) {
+                        if (!(currentNode != null && target1.compareTo(currentNode.next.element) >= 0));
+                        {
+                            //Adds all the Elements less than target1
+                            this.removeList.add(currentNode.element);
+                        }
+
+                        currentNode = currentNode.next;
+                    }
+
+                    currentNode = firstNode;
+                    while ((currentNode.next != null && target1.compareTo(currentNode.next.element) >= 0)) {
+                        if (!(currentNode != null && target1.compareTo(currentNode.next.element) >= 0));
+                        {
+                            //Adds all the Elements less than target1
+                            this.retainList.add(currentNode.element);
+                            this.removeList.remove(currentNode.element);
+                        }
+
+                        currentNode = currentNode.next;
+                    }
+
+                    currentNode = firstNode;
+                    while (currentNode != null) {
+                        if (target2.compareTo(currentNode.element) <= 0) {
+                            this.retainList.add(currentNode.element);
+
+                        }
+
+                        currentNode = currentNode.next;
+                    }
+
+                    //Checks if removeList is empty
+                    if (!this.removeList.isEmpty() && !this.retainList.isEmpty()) {
+                        System.out.print("Set: " + this.retainList + "\n");
+                        System.out.println("returned set: " + this.removeList);
+
+                    }
+
+                }
+
+            } else {
+                System.out.println("Cannot Perform This Action");
+                return false;
+            }
+        } else {
+            System.out.println("Range out of Bound");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean retain(E target1, E target2, Set set) {
+
+        Node<E> currentNode = firstNode;
+        removeList = new ArrayList();
+        retainList = new ArrayList();
+
+        if (target1 == null && target2 == null) {
+            System.out.println("set: " + set);
+            System.out.println("returned set: []");
+            return true;
+        }
+
+        if (target2 == null && set.contains(target1)) {
+            while (currentNode.next != null && target1.compareTo(currentNode.element) > 0) {
+                retainList.add(currentNode.element);
+                currentNode = currentNode.next;
+            }
+
+            currentNode = firstNode;
+            while (currentNode != null) {
+                if (target1.compareTo(currentNode.element) <= 0) {
+                    this.removeList.add(currentNode.element);
+
+                }
+
+                currentNode = currentNode.next;
+            }
+
+            System.out.println("Set: " + this.removeList);
+            System.out.print("returned set: " + this.retainList + "\n");
+
+        } else if (target1 == null && set.contains(target2)) {
+            while (currentNode.next != null && target2.compareTo(currentNode.next.element) >= 0) {
+                removeList.add(currentNode.element);
+                currentNode = currentNode.next;
+            }
+
+            currentNode = firstNode;
+            while (currentNode != null) {
+                if (target2.compareTo(currentNode.element) <= 0) {
+                    this.retainList.add(currentNode.element);
+
+                }
+
+                currentNode = currentNode.next;
+            }
+
+            System.out.println("Set: " + this.removeList);
+            System.out.print("returned set: " + this.retainList + "\n");
+
+        } else if (target2.compareTo(target1) >= 0) {
+
+            //Check condition for firstnode
+            if (currentNode == null || target1.compareTo(currentNode.element) < 0) {
+                System.out.println("set: []");
+                return false;
+            } else {
+                //Finds the elements added to a removeList and removed from the set
+                while (currentNode.next != null && target2.compareTo(currentNode.next.element) >= 0) {
+                    if (!(currentNode != null && target1.compareTo(currentNode.next.element) >= 0));
+                    {
+                        //Adds all the Elements less than target1
+                        this.removeList.add(currentNode.element);
+                    }
+
+                    currentNode = currentNode.next;
+                }
+
+                currentNode = firstNode;
+                while ((currentNode.next != null && target1.compareTo(currentNode.next.element) >= 0)) {
+                    if (!(currentNode != null && target1.compareTo(currentNode.next.element) >= 0));
+                    {
+                        //Adds all the Elements less than target1
+                        this.retainList.add(currentNode.element);
+                        this.removeList.remove(currentNode.element);
+                    }
+
+                    currentNode = currentNode.next;
+                }
+
+                currentNode = firstNode;
+                while (currentNode != null) {
+                    if (target2.compareTo(currentNode.element) <= 0) {
+                        this.retainList.add(currentNode.element);
+
+                    }
+
+                    currentNode = currentNode.next;
+                }
+
+                //Checks if removeList is empty
+                if (!this.removeList.isEmpty() && !this.retainList.isEmpty()) {
+                    System.out.println("Set: " + this.removeList);
+                    System.out.print("returned set: " + this.retainList + "\n");
+
+                }
+
+            }
+
+        } else {
+            System.out.println("Cannot Perform This Action");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static void main(String[] args) {
+        
+        Scanner read = new Scanner(System.in);
+        LinkedRRSet<Integer> set = new LinkedRRSet<>();
+        String userInput;
+        int firstValue, secondValue;
+        
+        for (int i = 1; i <= 10; i++) {
+            set.add(i);
+        }
+
+        System.out.println("\nOriginal Set: " + set);
+        System.out.println("retain(2,6)");
+        set.retain(2, 6, set);
+
+        System.out.println("\nOriginal Set: " + set);
+        System.out.println("remove(2,6)");
+        set.remove(2, 6, set);
+
+        System.out.println("\nOriginal Set: " + set);
+        System.out.println("remove(4,5)");
+        set.remove(4, 5, set);
+
+        System.out.println("\nOriginal Set: " + set);
+        System.out.println("retain(6,7)");
+        set.retain(6, 7, set);
+
+        System.out.println("\nOriginal Set: " + set);
+        System.out.println("retain(null,4)");
+        set.retain(null, 4, set);
+
+        System.out.println("\nOriginal Set: " + set);
+        System.out.println("retain(4,null)");
+        set.retain(4, null, set);
+
+        System.out.println("\nOriginal Set: " + set);
+        System.out.println("retain(null,null)");
+        set.retain(null, null, set);
+        
+    }
+}
